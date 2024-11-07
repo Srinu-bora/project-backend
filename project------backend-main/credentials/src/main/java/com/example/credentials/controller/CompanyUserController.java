@@ -28,16 +28,19 @@ public class CompanyUserController {
     }
 
    
+// @PostMapping("/login")
+// public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+//     boolean authenticated = companyUserService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
+//     if (authenticated) {
+//         return ResponseEntity.ok("Login successful!");
+//     } else {
+//         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+//     }
+// }
 @PostMapping("/login")
-public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-    boolean authenticated = companyUserService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
-    if (authenticated) {
-        return ResponseEntity.ok("Login successful!");
-    } else {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-    }
+public String login(@RequestBody LoginRequest loginRequest) {
+    return companyUserService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
 }
-
 
     // Get all companies
     @GetMapping

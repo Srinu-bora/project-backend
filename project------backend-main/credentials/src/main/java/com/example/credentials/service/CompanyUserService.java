@@ -2,6 +2,8 @@ package com.example.credentials.service;
 
 import com.example.credentials.model.CompanyUser;
 import com.example.credentials.repository.CompanyUserRepository;
+import com.example.credentials.util.JwtUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,8 @@ public class CompanyUserService {
     private CompanyUserRepository companyUserRepository;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
+   @Autowired
+    private JwtUtil jwtUtil;
     // Register the company user
     public String registerCompany(CompanyUser companyUser) {
         // Generate a unique 4-digit company ID
@@ -27,10 +30,18 @@ public class CompanyUserService {
     }
 
     // Authenticate user
-    public boolean authenticate(String username, String rawPassword) {
-        CompanyUser companyUser = companyUserRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
-        return passwordEncoder.matches(rawPassword, companyUser.getPassword());
+    // public boolean authenticate(String username, String rawPassword) {
+    //     CompanyUser companyUser = companyUserRepository.findByUsername(username)
+    //             .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+    //     return passwordEncoder.matches(rawPassword, companyUser.getPassword());
+    // }
+    public String authenticate(String username, String password) {
+        Optional<CompanyUser> userOpt = companyUserRepository.findByUsername(username);
+        
+        if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
+            return jwtUtil.generateToken(username);
+        }
+        throw new RuntimeException("Invalid username or password");
     }
 
     // Get all companies
